@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Harshit Rana — One record, four readings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,400&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #2e4b9e; --tint: #e5e9f5;
+    --paper: #f5f2ec; --band: #efebe3; --hover: #edeae2; --rule: #d6d1c6;
+    --text: #1a1814; --text-b: #201e18; --text-c: #4a473e; --text-d: #5c5a50;
+    --label: #6b6759; --dim: #6f6b60;
+    --onink: #f5f2ec; --onink-soft: rgba(245,242,236,.45); --onink-faint: rgba(245,242,236,.28);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--paper); color: var(--text); font-family: Archivo, system-ui, sans-serif; font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  a { color: var(--ink); text-decoration: none; }
+  a:hover { color: var(--text); }
+  button { font-family: inherit; font-variant-numeric: tabular-nums; }
+  ::selection { background: var(--ink); color: var(--paper); }
+  [data-rule] { transform: scaleX(0); transform-origin: left; transition: transform 1s cubic-bezier(.16,.8,.2,1); }
+  [data-rule="in"] { transform: scaleX(1); }
+  [data-up] { opacity: 0; transform: translateY(14px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
+  [data-up="in"] { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    [data-rule], [data-up] { opacity: 1 !important; transform: none !important; transition: none !important; }
+  }
+</style>
+</helmet>
+
+<div style="position: relative; width: 100%; background: var(--paper);">
+
+  <template id="__bundler_thumbnail" data-bg-color="#f5f2ec"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><rect width="1200" height="800" fill="#f5f2ec"></rect><rect x="360" y="230" width="480" height="340" fill="#2e4b9e"></rect><text x="600" y="400" text-anchor="middle" dominant-baseline="central" fill="#f5f2ec" font-family="Archivo, Helvetica, sans-serif" font-size="200" font-weight="700" letter-spacing="-8">HR</text></svg></template>
+
+  <div ref="{{ wipeRef }}" aria-hidden="true" style="position: fixed; top: 0; left: 0; width: 100%; height: 3px; transform: scaleX(0); transform-origin: left; z-index: 90; pointer-events: none;"></div>
+
+  <header style="position: sticky; top: 0; z-index: 80; background: var(--paper); border-bottom: 1px solid var(--rule);">
+    <div style="max-width: 1320px; margin: 0 auto; padding: 13px clamp(14px, 4vw, 56px); display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+      <a href="#cover" style="font-weight: 700; font-size: 12.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--text);">Harshit Rana</a>
+      <div style="display: flex; align-items: baseline; gap: clamp(10px, 2vw, 26px); flex-wrap: wrap; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; font-weight: 500;">
+        <a href="#work" style="color: var(--text-d);">Work</a>
+        <a href="#experience" style="color: var(--text-d);">Experience</a>
+        <a href="#index" style="color: var(--text-d);">Index</a>
+        <a href="#record" style="color: var(--text-d);">Record</a>
+        <a href="#contact" style="color: var(--text-d);">Contact</a>
+        <sc-if value="{{ light }}" hint-placeholder-val="{{ true }}">
+          <button type="button" onClick="{{ toggleTheme }}" aria-label="Switch to dark mode" style="cursor: pointer; background: transparent; border: 1px solid var(--rule); color: var(--text-d); padding: 5px 10px; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; font-weight: 600; transition: border-color .25s ease, color .25s ease;" style-hover="border-color: var(--ink); color: var(--ink);">Dark</button>
+        </sc-if>
+        <sc-if value="{{ dark }}" hint-placeholder-val="{{ false }}">
+          <button type="button" onClick="{{ toggleTheme }}" aria-label="Switch to light mode" style="cursor: pointer; background: transparent; border: 1px solid var(--rule); color: var(--text-d); padding: 5px 10px; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; font-weight: 600; transition: border-color .25s ease, color .25s ease;" style-hover="border-color: var(--ink); color: var(--ink);">Light</button>
+        </sc-if>
+      </div>
+    </div>
+    <div role="tablist" aria-label="Choose a reading" style="max-width: 1320px; margin: 0 auto; padding: 0 clamp(14px, 4vw, 56px) 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 6px;">
+      <sc-for list="{{ lensTabs }}" as="t" hint-placeholder-count="4">
+        <span style="display: block; min-width: 0;">
+          <sc-if value="{{ t.on }}" hint-placeholder-val="{{ false }}">
+            <button type="button" role="tab" onClick="{{ t.pick }}" aria-selected="true" style="cursor: default; width: 100%; text-align: left; padding: 11px 13px 12px; border: 1px solid var(--ink); background: var(--ink); color: var(--onink); display: grid; gap: 3px;">
+              <span style="font-size: 10.5px; letter-spacing: .18em; font-weight: 600; opacity: .8;">{{ t.num }} — Now reading</span>
+              <span style="font-size: 13.5px; letter-spacing: -.01em; font-weight: 600; line-height: 1.2;">{{ t.label }}</span>
+            </button>
+          </sc-if>
+          <sc-if value="{{ t.off }}" hint-placeholder-val="{{ true }}">
+            <button type="button" role="tab" onClick="{{ t.pick }}" aria-selected="false" style="cursor: pointer; width: 100%; text-align: left; padding: 11px 13px 12px; border: 1px solid var(--rule); background: transparent; color: var(--text-d); display: grid; gap: 3px; transition: border-color .25s ease, color .25s ease, background .25s ease;" style-hover="border-color: var(--text); color: var(--text); background: var(--hover);">
+              <span style="font-size: 10.5px; letter-spacing: .18em; font-weight: 600; opacity: .75;">{{ t.num }}</span>
+              <span style="font-size: 13.5px; letter-spacing: -.01em; font-weight: 600; line-height: 1.2;">{{ t.label }}</span>
+            </button>
+          </sc-if>
+        </span>
+      </sc-for>
+    </div>
+  </header>
+
+  <main ref="{{ mainRef }}">
+
+    <section id="cover" style="max-width: 1320px; margin: 0 auto; padding: clamp(36px, 6vw, 88px) clamp(14px, 4vw, 56px) clamp(40px, 5vw, 72px);">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: clamp(28px, 4vw, 72px); align-items: start;">
+        <div>
+          <div data-swap="" style="font-size: 11px; letter-spacing: .2em; text-transform: uppercase; font-weight: 600; color: var(--ink);">{{ readingLine }}</div>
+          <h1 data-swap="" style="margin: 16px 0 0; font-weight: 700; font-size: clamp(33px, 5.4vw, 74px); line-height: 1.02; letter-spacing: -.035em; color: var(--ink); text-wrap: balance;">{{ role }}</h1>
+          <div style="height: 2px; background: var(--ink); margin: clamp(20px, 3vw, 32px) 0 0;" data-rule=""></div>
+          <div style="margin-top: clamp(20px, 3vw, 30px); display: grid; gap: 11px; max-width: 480px;">
+            <div style="display: grid; grid-template-columns: 104px 1fr; gap: 14px; align-items: baseline; font-size: 13.5px;">
+              <span style="letter-spacing: .12em; text-transform: uppercase; font-size: 10.5px; font-weight: 600; color: var(--label);">Name</span>
+              <span style="font-weight: 500;">Harshit Rana</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 104px 1fr; gap: 14px; align-items: baseline; font-size: 13.5px;">
+              <span style="letter-spacing: .12em; text-transform: uppercase; font-size: 10.5px; font-weight: 600; color: var(--label);">Studying</span>
+              <span style="font-weight: 500;">B.Tech CSE (AI &amp; ML), The NorthCap University · 2023–2027</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 104px 1fr; gap: 14px; align-items: baseline; font-size: 13.5px;">
+              <span style="letter-spacing: .12em; text-transform: uppercase; font-size: 10.5px; font-weight: 600; color: var(--label);">Based in</span>
+              <span style="font-weight: 500;">New Delhi, India</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 104px 1fr; gap: 14px; align-items: baseline; font-size: 13.5px;">
+              <span style="letter-spacing: .12em; text-transform: uppercase; font-size: 10.5px; font-weight: 600; color: var(--label);">Now</span>
+              <span style="font-weight: 500;">Junior Research Fellow, Thapar Institute · AI &amp; Software Development Intern, Tinycrows</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="background: var(--tint); padding: clamp(22px, 3vw, 34px);">
+            <p data-swap="" style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-size: clamp(16px, 1.7vw, 19.5px); line-height: 1.6; font-weight: 400; color: var(--text-b); text-wrap: pretty;">{{ summary }}</p>
+          </div>
+          <div style="margin-top: clamp(22px, 3vw, 32px); padding-top: 20px; border-top: 1px solid var(--rule);">
+            <div style="font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; font-weight: 600; color: var(--label);">Why four readings</div>
+            <p style="margin: 12px 0 0; font-family: 'Source Serif 4', Georgia, serif; font-size: 16px; line-height: 1.62; color: var(--text-c); text-wrap: pretty;">I keep four versions of my résumé — one for research labs, one for platform teams, one for agent products, one for full-stack roles. Rather than pick one and hide the others, this site lets you choose. Nothing below is rewritten between readings; it is only reordered and re-emphasized.</p>
+            <p style="margin: 14px 0 0; font-size: 13px; line-height: 1.55; color: var(--label);">Use the four tabs above, or press 1–4.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="work" style="max-width: 1320px; margin: 0 auto; padding: clamp(28px, 4vw, 56px) clamp(14px, 4vw, 56px) clamp(40px, 5vw, 72px);">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding-bottom: 14px;">
+        <h2 style="margin: 0; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; font-weight: 600; color: var(--label);">Work — ordered for this reading</h2>
+        <div data-swap="" style="font-size: 11px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; color: var(--ink);">{{ workNote }}</div>
+      </div>
+      <div style="height: 1px; background: var(--text);" data-rule=""></div>
+
+      <sc-for list="{{ works }}" as="w" hint-placeholder-count="4">
+        <div style="border-bottom: 1px solid var(--rule);">
+          <button type="button" onClick="{{ w.toggle }}" aria-expanded="{{ w.openStr }}" style="cursor: pointer; width: 100%; text-align: left; background: transparent; border: none; padding: clamp(20px, 2.6vw, 30px) 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 10px clamp(20px, 3vw, 44px); align-items: start; color: inherit;" style-hover="background: var(--tint);">
+            <div style="display: flex; gap: 16px; align-items: baseline; min-width: 0;">
+              <span style="font-size: 12px; font-weight: 600; letter-spacing: .1em; color: var(--ink); padding-top: 6px;">{{ w.num }}</span>
+              <div style="min-width: 0;">
+                <div style="font-size: clamp(21px, 2.5vw, 32px); font-weight: 600; letter-spacing: -.025em; line-height: 1.1;">{{ w.title }}</div>
+                <div data-swap="" style="margin-top: 7px; font-size: 12px; letter-spacing: .04em; font-weight: 500; color: var(--label);">{{ w.stack }}</div>
+                <sc-if value="{{ w.top }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top: 10px; display: inline-block; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; font-weight: 600; color: var(--onink); background: var(--ink); padding: 4px 8px;">Most relevant here</div>
+                </sc-if>
+              </div>
+            </div>
+            <div style="min-width: 0; display: flex; gap: 18px; align-items: start; justify-content: space-between;">
+              <p data-swap="" style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-size: clamp(15.5px, 1.6vw, 18px); line-height: 1.55; color: var(--text-b); max-width: 46ch; text-wrap: pretty;">{{ w.line }}</p>
+              <span aria-hidden="true" style="flex: none; font-size: 20px; line-height: 1; color: var(--ink); padding-top: 2px;">{{ w.sign }}</span>
+            </div>
+          </button>
+
+          <sc-if value="{{ w.open }}" hint-placeholder-val="{{ false }}">
+            <div style="padding: 0 0 clamp(26px, 3vw, 38px); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: clamp(18px, 3vw, 44px);">
+              <div style="display: flex; gap: 16px;">
+                <span style="width: 12px; flex: none;"></span>
+                <div style="border-left: 2px solid var(--ink); padding-left: 18px;">
+                  <div style="font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; font-weight: 600; color: var(--label);">Detail for this reading</div>
+                  <sc-if value="{{ w.alt }}" hint-placeholder-val="{{ false }}">
+                    <div style="margin-top: 9px; font-size: 13px; color: var(--text-d);">{{ w.altText }}</div>
+                  </sc-if>
+                  <sc-if value="{{ w.link }}" hint-placeholder-val="{{ false }}">
+                    <a href="{{ w.link }}" target="_blank" rel="noopener" style="display: inline-block; margin-top: 14px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 600; border-bottom: 1px solid var(--ink); padding-bottom: 3px;">Repository ↗</a>
+                  </sc-if>
+                </div>
+              </div>
+              <ul style="margin: 0; padding: 0; list-style: none; display: grid; gap: 14px;">
+                <sc-for list="{{ w.bullets }}" as="b" hint-placeholder-count="3">
+                  <li style="display: grid; grid-template-columns: 26px 1fr; gap: 8px; font-family: 'Source Serif 4', Georgia, serif; font-size: 16px; line-height: 1.6; color: var(--text-c);">
+                    <span style="font-family: Archivo, sans-serif; font-size: 11px; font-weight: 600; color: var(--ink); padding-top: 5px;">{{ b.i }}</span>
+                    <span>{{ b.t }}</span>
+                  </li>
+                </sc-for>
+              </ul>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+
+      <div style="margin-top: clamp(22px, 3vw, 34px); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 12px clamp(20px, 3vw, 44px);">
+        <div style="font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; font-weight: 600; color: var(--label);">Open source</div>
+        <div>
+          <p style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-size: 16px; line-height: 1.6; color: var(--text-c); max-width: 60ch; text-wrap: pretty;"><strong style="font-family: Archivo, sans-serif; font-size: 14.5px; font-weight: 600;">swiftPentest</strong> — contributor to an open-source multi-agent system automating web penetration testing across reconnaissance, vulnerability detection, validation and reporting, built under the <strong style="font-family: Archivo, sans-serif; font-size: 14.5px; font-weight: 600;">swiftsaneai</strong> organization.</p>
+          <div style="display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 14px;">
+            <a href="https://github.com/swiftsaneai/swiftPentest" target="_blank" rel="noopener" style="font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 600; border-bottom: 1px solid var(--ink); padding-bottom: 3px;">swiftsaneai/swiftPentest ↗</a>
+            <a href="https://github.com/swiftsaneai" target="_blank" rel="noopener" style="font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 600; border-bottom: 1px solid var(--rule); padding-bottom: 3px; color: var(--text-c);" style-hover="border-bottom-color: var(--ink); color: var(--ink);">The organization ↗</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="experience" style="background: var(--band); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);">
+      <div style="max-width: 1320px; margin: 0 auto; padding: clamp(40px, 5vw, 78px) clamp(14px, 4vw, 56px);">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding-bottom: 14px;">
+          <h2 style="margin: 0; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; font-weight: 600; color: var(--label);">Experience</h2>
+          <div data-swap="" style="font-size: 11px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; color: var(--ink);">{{ expNote }}</div>
+        </div>
+        <div style="height: 1px; background: var(--text);" data-rule=""></div>
+
+        <sc-for list="{{ roles }}" as="r" hint-placeholder-count="3">
+          <div data-up="" style="padding: clamp(24px, 3vw, 38px) 0; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 14px clamp(20px, 3vw, 44px); align-items: start;">
+            <div>
+              <div style="font-size: 11.5px; letter-spacing: .14em; font-weight: 600; color: var(--ink);">{{ r.dates }}</div>
+              <div style="margin-top: 10px; font-size: clamp(18px, 2vw, 24px); font-weight: 600; letter-spacing: -.02em; line-height: 1.15;">{{ r.role }}</div>
+              <div style="margin-top: 6px; font-size: 13.5px; color: var(--text-d);">{{ r.org }}</div>
+            </div>
+            <ul style="margin: 0; padding: 0; list-style: none; display: grid; gap: 13px; grid-column: span 2; min-width: 0;">
+              <sc-for list="{{ r.bullets }}" as="b" hint-placeholder-count="2">
+                <li data-swap="" style="display: grid; grid-template-columns: 26px 1fr; gap: 8px; font-family: 'Source Serif 4', Georgia, serif; font-size: 16.5px; line-height: 1.6; color: var(--text-b); max-width: 68ch;">
+                  <span style="font-family: Archivo, sans-serif; font-size: 11px; font-weight: 600; color: var(--ink); padding-top: 5px;">{{ b.i }}</span>
+                  <span>{{ b.t }}</span>
+                </li>
+              </sc-for>
+            </ul>
+          </div>
+        </sc-for>
+
+        <div style="padding: clamp(24px, 3vw, 38px) 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 14px clamp(20px, 3vw, 44px);">
+          <div>
+            <div style="font-size: 11.5px; letter-spacing: .14em; font-weight: 600; color: var(--label);">2023 — 2027</div>
+            <div style="margin-top: 10px; font-size: clamp(18px, 2vw, 24px); font-weight: 600; letter-spacing: -.02em; line-height: 1.15;">B.Tech, Computer Science &amp; Engineering</div>
+            <div style="margin-top: 6px; font-size: 13.5px; color: var(--text-d);">Artificial Intelligence &amp; Machine Learning · The NorthCap University</div>
+          </div>
+          <div style="grid-column: span 2;">
+            <p style="margin: 0; font-family: 'Source Serif 4', Georgia, serif; font-size: 16.5px; line-height: 1.6; color: var(--text-c); max-width: 68ch; text-wrap: pretty;">Coursework across data structures and algorithms, object-oriented programming, database systems, computer networks and operating systems, alongside the machine learning specialization.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="index" style="max-width: 1320px; margin: 0 auto; padding: clamp(40px, 5vw, 78px) clamp(14px, 4vw, 56px);">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding-bottom: 14px;">
+        <h2 style="margin: 0; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; font-weight: 600; color: var(--label);">Capability index</h2>
+        <div data-swap="" style="font-size: 11px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; color: var(--ink);">{{ indexNote }}</div>
+      </div>
+      <div style="height: 1px; background: var(--text);" data-rule=""></div>
+      <p style="margin: 18px 0 0; font-family: 'Source Serif 4', Georgia, serif; font-size: 16.5px; line-height: 1.6; color: var(--text-c); max-width: 64ch; text-wrap: pretty;">Everything I actually work with, in full. The list never shortens between readings — the emphasis moves.</p>
+
+      <div style="margin-top: clamp(26px, 3.5vw, 44px); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: clamp(22px, 3vw, 40px);">
+        <sc-for list="{{ groups }}" as="g" hint-placeholder-count="8">
+          <div>
+            <div style="font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; font-weight: 600; color: var(--text); padding-bottom: 9px; border-bottom: 1px solid var(--rule);">{{ g.name }}</div>
+            <div style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px 7px; align-items: flex-start;">
+              <sc-for list="{{ g.items }}" as="s" hint-placeholder-count="10">
+                <span style="display: inline-flex; align-items: flex-start;">
+                  <sc-if value="{{ s.on }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size: 13.5px; font-weight: 600; line-height: 1.35; white-space: nowrap; color: var(--ink); background: var(--tint); padding: 3px 7px; ">{{ s.n }}</span>
+                  </sc-if>
+                  <sc-if value="{{ s.off }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size: 13.5px; font-weight: 400; line-height: 1.35; white-space: nowrap; color: var(--dim); padding: 3px 7px;">{{ s.n }}</span>
+                  </sc-if>
+                </span>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="record" style="background: var(--band); border-top: 1px solid var(--rule);">
+      <div style="max-width: 1320px; margin: 0 auto; padding: clamp(40px, 5vw, 78px) clamp(14px, 4vw, 56px);">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding-bottom: 14px;">
+          <h2 style="margin: 0; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; font-weight: 600; color: var(--label);">Record</h2>
+          <div style="font-size: 11px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; color: var(--label);">Identical in all four readings</div>
+        </div>
+        <div style="height: 1px; background: var(--text);" data-rule=""></div>
+
+        <div style="margin-top: clamp(8px, 1.5vw, 16px);">
+          <div data-up="" style="padding: clamp(18px, 2.2vw, 26px) 0; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 8px clamp(20px, 3vw, 44px); align-items: baseline;">
+            <span style="font-size: 12px; font-weight: 600; letter-spacing: .12em; color: var(--ink);">APR 2026</span>
+            <span style="font-size: clamp(17px, 1.9vw, 22px); font-weight: 600; letter-spacing: -.02em;">Winner — Eclipse 6.0 Hackathon</span>
+            <span style="font-family: 'Source Serif 4', Georgia, serif; font-size: 15.5px; color: var(--text-d);">Thapar Institute of Engineering &amp; Technology</span>
+          </div>
+          <div data-up="" style="padding: clamp(18px, 2.2vw, 26px) 0; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 8px clamp(20px, 3vw, 44px); align-items: baseline;">
+            <span style="font-size: 12px; font-weight: 600; letter-spacing: .12em; color: var(--ink);">2026</span>
+            <span style="font-size: clamp(17px, 1.9vw, 22px); font-weight: 600; letter-spacing: -.02em;">Finalist — India Innovates 2026</span>
+            <span style="font-family: 'Source Serif 4', Georgia, serif; font-size: 15.5px; color: var(--text-d);">National Civic-Tech Hackathon</span>
+          </div>
+          <div data-up="" style="padding: clamp(18px, 2.2vw, 26px) 0; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 8px clamp(20px, 3vw, 44px); align-items: baseline;">
+            <span style="font-size: 12px; font-weight: 600; letter-spacing: .12em; color: var(--ink);">JAN 2026</span>
+            <span style="font-size: clamp(17px, 1.9vw, 22px); font-weight: 600; letter-spacing: -.02em;">2nd Runner-Up — thinkQbator SprintFORGood</span>
+            <span style="font-family: 'Source Serif 4', Georgia, serif; font-size: 15.5px; color: var(--text-d);">AI Hackathon, IIT Delhi</span>
+          </div>
+          <div data-up="" style="padding: clamp(18px, 2.2vw, 26px) 0; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 8px clamp(20px, 3vw, 44px); align-items: baseline;">
+            <span style="font-size: 12px; font-weight: 600; letter-spacing: .12em; color: var(--ink);">2025</span>
+            <span style="font-size: clamp(17px, 1.9vw, 22px); font-weight: 600; letter-spacing: -.02em;">Global Top 112 — Cardano Hackathon Asia</span>
+            <span style="font-family: 'Source Serif 4', Georgia, serif; font-size: 15.5px; color: var(--text-d);">IBW Edition</span>
+          </div>
+        </div>
+
+        <div style="margin-top: clamp(28px, 3.5vw, 48px); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 16px clamp(20px, 3vw, 44px);">
+          <div style="font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; font-weight: 600; color: var(--label);">Certifications</div>
+          <div style="grid-column: span 2; display: grid; gap: 16px;">
+            <div style="display: grid; grid-template-columns: 92px 1fr; gap: 16px; align-items: baseline;">
+              <span style="font-size: 12px; font-weight: 600; letter-spacing: .1em; color: var(--label);">JUL 2025</span>
+              <span style="font-size: 16px; font-weight: 500; line-height: 1.45;">Microsoft Azure AI Fundamentals (AI-900)</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 92px 1fr; gap: 16px; align-items: baseline;">
+              <span style="font-size: 12px; font-weight: 600; letter-spacing: .1em; color: var(--label);">2025</span>
+              <span style="font-size: 16px; font-weight: 500; line-height: 1.45;">Oracle Cloud Infrastructure — Generative AI Associate</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 92px 1fr; gap: 16px; align-items: baseline;">
+              <span style="font-size: 12px; font-weight: 600; letter-spacing: .1em; color: var(--label);">2024</span>
+              <span style="font-size: 16px; font-weight: 500; line-height: 1.45;">AWS Academy Graduate — Cloud Foundations</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" style="background: var(--ink); color: var(--onink);">
+      <div style="max-width: 1320px; margin: 0 auto; padding: clamp(48px, 7vw, 108px) clamp(14px, 4vw, 56px) clamp(32px, 4vw, 56px);">
+        <div style="font-size: 11px; letter-spacing: .2em; text-transform: uppercase; font-weight: 600; opacity: .75;">Contact</div>
+        <h2 data-swap="" style="margin: clamp(20px, 3vw, 34px) 0 0; font-weight: 700; font-size: clamp(30px, 4.6vw, 62px); line-height: 1.04; letter-spacing: -.035em; max-width: 22ch; text-wrap: balance;">{{ closing }}</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: 10px; margin-top: clamp(28px, 4vw, 48px); max-width: 1000px;">
+          <a href="mailto:ranaharshit633@gmail.com" style="display: flex; align-items: center; min-height: 56px; padding: 14px 18px; background: var(--onink); color: var(--ink); font-size: 13.5px; font-weight: 600; letter-spacing: .02em;" style-hover="background: var(--text); color: var(--paper);">ranaharshit633@gmail.com</a>
+          <a href="https://github.com/harshiit-rana" target="_blank" rel="noopener" style="display: flex; align-items: center; min-height: 56px; padding: 14px 18px; border: 1px solid var(--onink-soft); color: var(--onink); font-size: 13.5px; font-weight: 600; letter-spacing: .02em;" style-hover="background: var(--onink); color: var(--ink);">github.com/harshiit-rana ↗</a>
+          <a href="https://www.linkedin.com/in/rana-harshit" target="_blank" rel="noopener" style="display: flex; align-items: center; min-height: 56px; padding: 14px 18px; border: 1px solid var(--onink-soft); color: var(--onink); font-size: 13.5px; font-weight: 600; letter-spacing: .02em;" style-hover="background: var(--onink); color: var(--ink);">linkedin.com/in/rana-harshit ↗</a>
+          <a href="tel:+919315713515" style="display: flex; align-items: center; min-height: 56px; padding: 14px 18px; border: 1px solid var(--onink-soft); color: var(--onink); font-size: 13.5px; font-weight: 600; letter-spacing: .02em;" style-hover="background: var(--onink); color: var(--ink);">+91 93157-13515</a>
+        </div>
+        <div style="margin-top: clamp(44px, 6vw, 88px); padding-top: 18px; border-top: 1px solid var(--onink-faint); display: flex; flex-wrap: wrap; gap: 10px 28px; justify-content: space-between; font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; opacity: .8;">
+          <span>Harshit Rana · New Delhi, India</span>
+          <span data-swap="">{{ readingLine }}</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+const THEME_LIGHT = {
+  '--paper': '#f5f2ec', '--band': '#efebe3', '--hover': '#edeae2', '--rule': '#d6d1c6',
+  '--text': '#1a1814', '--text-b': '#201e18', '--text-c': '#4a473e', '--text-d': '#5c5a50',
+  '--label': '#6b6759', '--dim': '#6f6b60',
+  '--onink': '#f5f2ec', '--onink-soft': 'rgba(245,242,236,.45)', '--onink-faint': 'rgba(245,242,236,.28)'
+};
+const THEME_DARK = {
+  '--paper': '#121310', '--band': '#1a1c18', '--hover': '#23261f', '--rule': '#33362d',
+  '--text': '#ece9df', '--text-b': '#ddd9cc', '--text-c': '#bdb9ab', '--text-d': '#a8a498',
+  '--label': '#9a968a', '--dim': '#8b8880',
+  '--onink': '#121310', '--onink-soft': 'rgba(18,19,16,.5)', '--onink-faint': 'rgba(18,19,16,.32)'
+};
+
+const LENSES = [
+  {
+    id: 'research', num: '01', label: 'AI/ML & research', ink: '#2e4b9e', tint: '#e5e9f5', inkD: '#8fa9f0', tintD: '#1b2236',
+    role: 'AI/ML engineer & research fellow',
+    summary: 'AI/ML-focused software engineer and B.Tech CSE (AI/ML) student building AI systems, backend services, agentic workflows and research prototypes. Experience spans AI evaluation, knowledge graphs, retrieval, document intelligence, privacy-preserving AI and human-in-the-loop systems.',
+    closing: 'Looking for research collaboration, or an AI engineering team that cares how it is evaluated.',
+    workNote: 'Research systems first',
+    expNote: 'Research fellowship first',
+    indexNote: 'Emphasis: modelling, evaluation, research',
+    order: ['dg', 'tprm', 'dc', 'rag'], roleOrder: ['jrf', 'tiny', 'uts']
+  },
+  {
+    id: 'systems', num: '02', label: 'Backend & automation', ink: '#0b6b50', tint: '#dfeae5', inkD: '#59c6a0', tintD: '#13271f',
+    role: 'Backend & platform engineer',
+    summary: 'Software-engineering-focused student with hands-on experience building backend services, data pipelines and production automation using Python, FastAPI, PostgreSQL, Docker, Linux and CI/CD. Comfortable with reliable ingestion pipelines, containerized services and large multi-step automation workflows, on a foundation of operating systems, networks and distributed systems.',
+    closing: 'Looking for a platform or backend team where reliability is the interesting part.',
+    workNote: 'Pipelines, services and automation first',
+    expNote: 'Production work first',
+    indexNote: 'Emphasis: services, automation, infrastructure',
+    order: ['dg', 'tprm', 'dc', 'rag'], roleOrder: ['tiny', 'jrf', 'uts']
+  },
+  {
+    id: 'agents', num: '03', label: 'Agentic & conversational AI', ink: '#9e4331', tint: '#f3e5e1', inkD: '#f09277', tintD: '#2b1c16',
+    role: 'Agentic AI engineer',
+    summary: 'Builds conversational and agentic AI systems end to end — RAG pipelines, tool-calling agents, prompt engineering and rigorous model evaluation — and ships them as production APIs. Hackathon winner who moves from idea to working prototype fast, and enjoys debugging problems where the answer is not obvious.',
+    closing: 'Looking for a team shipping agents into production, where the failure modes are real.',
+    workNote: 'Retrieval and agents first',
+    expNote: 'Applied AI work first',
+    indexNote: 'Emphasis: agents, retrieval, evaluation',
+    order: ['rag', 'dc', 'tprm', 'dg'], roleOrder: ['tiny', 'jrf', 'uts']
+  },
+  {
+    id: 'product', num: '04', label: 'Full-stack product', ink: '#7a5719', tint: '#ede6d7', inkD: '#d9ae5e', tintD: '#262013',
+    role: 'Full-stack product engineer',
+    summary: 'B.Tech CSE (AI & ML) student with a software internship building production-grade full-stack and AI-enabled applications — React/Next.js and TypeScript frontends, Python and Node.js APIs, SQL and NoSQL data layers — plus RAG, LLM and vector-database features shipped into real products.',
+    closing: 'Looking for a product team where I can own a feature from interface to database.',
+    workNote: 'Shipped products first',
+    expNote: 'Product work first',
+    indexNote: 'Emphasis: interfaces, APIs, automation, delivery',
+    order: ['dc', 'tprm', 'rag', 'dg'], roleOrder: ['tiny', 'jrf', 'uts']
+  }
+];
+
+const PROJECTS = {
+  dg: {
+    title: 'Decision Graph', link: 'https://github.com/harshiit-rana/decision-graph',
+    alt: 'Also developed under the name TraceMind.',
+    v: {
+      research: {
+        stack: 'Python · PostgreSQL · Docker · GitHub API',
+        line: 'A time-versioned knowledge graph that reconstructs engineering decisions and answers “why” with the evidence still attached.',
+        bullets: [
+          'Evidence-aware graph reasoning with explicit and inferred provenance, evidence tiers, point-in-time queries and controlled fallback traversal to preserve evidence quality.',
+          'GitHub ingestion, candidate retrieval, decision synthesis and graph traversal pipelines backed by PostgreSQL, with Dockerized execution and resumable ingestion.',
+          'An evaluation framework and automated Python/SQL test suites covering graph integrity, decision constraints, evidence tiering, traversal behavior and integration workflows.'
+        ]
+      },
+      systems: {
+        stack: 'Python · PostgreSQL · Docker Compose · CI',
+        line: 'An organizational intelligence engine resting on a resumable ingestion pipeline over the whole of a repository’s history.',
+        bullets: [
+          'Cursor-based backfills with rate-limit handling and transactional progress tracking, so an interrupted run resumes instead of restarting.',
+          'Candidate retrieval plus graph-based Why and Impact traversal, including point-in-time queries and controlled fallback between explicit and inferred evidence.',
+          'Containerized alongside PostgreSQL with Docker Compose, verified by CI-based integration tests.'
+        ]
+      },
+      agents: {
+        stack: 'Python · PostgreSQL · Knowledge graphs',
+        line: 'Retrieval over a knowledge graph rather than a vector store — every answer comes back with its source chain.',
+        bullets: [
+          'Reconstructs why decisions were made from issues, pull requests, commits, reviews and releases.',
+          'Candidate retrieval and traversal return an answer together with its evidence path and tier, explicit or marked inferred.',
+          'Point-in-time queries answer what was known at a given moment, not only what is true now.'
+        ]
+      },
+      product: {
+        stack: 'Python · PostgreSQL · Docker · GitHub API · CI',
+        line: 'A time-versioned engine that reconstructs engineering decisions from repository history.',
+        bullets: [
+          'Extraction-first ingestion pipeline with cursor-based resumability, transactional progress tracking and rate-limit handling.',
+          'Candidate retrieval and Why/Impact traversal with point-in-time queries, evidence tiering and provenance tracking.',
+          'Application and PostgreSQL containerized with Docker Compose, covered by automated Python, SQL, integration and Docker-based tests.'
+        ]
+      }
+    }
+  },
+  dc: {
+    title: 'DataClean AI', link: 'https://github.com/harshiit-rana/dataclean-ai',
+    alt: 'Open source.',
+    v: {
+      research: {
+        stack: 'LangGraph · Ollama · FastAPI · React · Docker',
+        line: 'A multi-agent system that profiles a dataset, plans transformations, and then waits for a person to approve them.',
+        bullets: [
+          'Specialized agents for dataset profiling, transformation planning, validation and cleaning, coordinated by LangGraph across structured multi-step workflows.',
+          'A human-in-the-loop architecture: agents propose transformations, and users explicitly approve operations before execution.',
+          'LLM inference runs locally through Ollama with the full application containerized, improving privacy, reproducibility and deployment consistency.'
+        ]
+      },
+      systems: {
+        stack: 'Python · LangGraph · FastAPI · Redis · Docker',
+        line: 'A stateful cleaning workflow that survives interruption — checkpointed, auditable, containerized.',
+        bullets: [
+          'A LangGraph workflow across profiling, explanation, human approval, cleaning and auditing, using native interrupts and Redis-backed checkpoints.',
+          'Deterministic profiling combined with LLM-based semantic interpretation to find missing values, duplicates, inconsistent formats, mixed types and outliers.',
+          'Per-fix approval, rejection and undo, audit reporting, ML-readiness checks, and full-stack containerization with Docker Compose.'
+        ]
+      },
+      agents: {
+        stack: 'LangGraph · FastAPI · React · Redis',
+        line: 'Agents that stop and ask. Profiling, goal-aware prioritization, then an explicit approval gate before anything is written.',
+        bullets: [
+          'A LangGraph workflow covering profiling, explanation, human approval, cleaning and auditing, with Redis-backed checkpoints preserving workflow state.',
+          'Deterministic data-quality checks running alongside LLM-based semantic interpretation and goal-aware prioritization.',
+          'Users upload a CSV, state a cleaning goal, and review every recommendation per fix before it is applied.'
+        ]
+      },
+      product: {
+        stack: 'React · FastAPI · Redis · Docker Compose',
+        line: 'An open-source CSV cleaning product: upload, state a goal, review the proposed fixes, apply.',
+        bullets: [
+          'Profiles datasets, prioritizes issues against the user’s stated goal, and proposes fixes for human approval.',
+          'Per-fix approve, reject and undo, plus audit reporting and ML-readiness checks.',
+          'Full stack containerized with Docker Compose across a FastAPI backend, React frontend and Redis services.'
+        ]
+      }
+    }
+  },
+  tprm: {
+    title: 'Third-Party Risk Management', link: '',
+    alt: 'Winner, Eclipse 6.0 Hackathon · Finalist, India Innovates 2026.',
+    v: {
+      research: {
+        stack: 'n8n · JavaScript · LangChain · Agentic AI',
+        line: 'An agentic platform for vendor onboarding, risk assessment, due diligence and continuous monitoring.',
+        bullets: [
+          'Multi-step agentic workflows for vendor profiling, criticality assessment, evidence collection, evaluation and remediation.',
+          'AI-assisted validation compares questionnaire responses against uploaded documentation to identify inconsistencies, unsupported claims and risk signals.',
+          'Automated risk scoring, audit trails and structured evaluation outputs, to make AI-assisted decisions transparent and traceable.'
+        ]
+      },
+      systems: {
+        stack: 'n8n · JavaScript · LangChain · Automation',
+        line: 'Enterprise vendor risk, automated end to end — onboarding through to continuous monitoring.',
+        bullets: [
+          'Multi-step workflows for vendor profiling, criticality assessment, evidence collection, evaluation, validation and remediation.',
+          'Automated risk scoring, audit trails and structured evaluation outputs, so automated decisions stay traceable.',
+          'A due-diligence engine evaluating 20+ security controls including SSL/TLS, SPF, DKIM, DMARC, security headers and exposed services.'
+        ]
+      },
+      agents: {
+        stack: 'n8n · LangChain · AI agents',
+        line: 'Agentic workflows doing due diligence: 20+ security controls checked, and every claim cross-examined against its evidence.',
+        bullets: [
+          'Agentic n8n workflows for vendor profiling, criticality assessment, evidence collection and remediation.',
+          'A due-diligence engine evaluating 20+ security controls including SSL/TLS, SPF, DKIM, DMARC, security headers and exposed services.',
+          'LangChain-based validation comparing vendor questionnaire responses against uploaded documentation to flag unsupported claims.'
+        ]
+      },
+      product: {
+        stack: 'n8n · JavaScript · LangChain',
+        line: 'A third-party risk product: onboarding, cyber-risk assessment and compliance workflows in one place.',
+        bullets: [
+          'Automates vendor onboarding, cyber-risk assessment and compliance workflows.',
+          'A due-diligence engine evaluating 20+ security controls including SSL/TLS, SPF, DKIM, DMARC and security headers.',
+          'Validation comparing questionnaire responses against uploaded documentation to flag unsupported claims.'
+        ]
+      }
+    }
+  },
+  rag: {
+    title: 'Healthcare RAG System', link: '', alt: '',
+    v: {
+      research: {
+        stack: 'Python · LangChain · ChromaDB · Gradio',
+        line: 'Retrieval-augmented question answering over a healthcare corpus — benchmarked, rather than assumed to work.',
+        bullets: [
+          'Document chunking, semantic retrieval and vector search implemented on ChromaDB.',
+          'Chunking and prompting strategies benchmarked against a held-out question set to improve retrieval accuracy and reduce hallucinations.',
+          'A Gradio interface shows each generated response alongside the retrieved source passages.'
+        ]
+      },
+      systems: {
+        stack: 'Python · LangChain · ChromaDB',
+        line: 'A retrieval pipeline over a document corpus: chunking, embedding, vector search, served behind an interface.',
+        bullets: [
+          'Document chunking and embedding pipeline with semantic retrieval over ChromaDB.',
+          'Evaluated against a held-out question set to compare chunking and prompting strategies.',
+          'Served through an interface that exposes the retrieved passages next to the answer.'
+        ]
+      },
+      agents: {
+        stack: 'Python · LangChain · ChromaDB · Gradio',
+        line: 'RAG for healthcare question answering — chunking, semantic retrieval and vector search, tuned against a held-out set.',
+        bullets: [
+          'Retrieval-augmented generation over a domain document corpus, with chunking, semantic retrieval and ChromaDB vector search.',
+          'Chunking and prompting strategies benchmarked against a held-out question set to raise retrieval accuracy and reduce hallucinations.',
+          'A Gradio interface shows the generated response beside the passages it was retrieved from.'
+        ]
+      },
+      product: {
+        stack: 'Python · LangChain · ChromaDB · Gradio',
+        line: 'A question-answering interface that answers from a healthcare document corpus and shows its sources.',
+        bullets: [
+          'Retrieval-augmented generation over a domain document corpus, with document chunking and vector search in ChromaDB.',
+          'Chunking and prompting strategies benchmarked against a held-out question set.',
+          'Interface built in Gradio, presenting each answer next to the retrieved source passages.'
+        ]
+      }
+    }
+  }
+};
+
+const ROLES = {
+  jrf: {
+    dates: 'SEP 2026 — PRESENT', role: 'Junior Research Fellow', org: 'Thapar Institute of Engineering & Technology',
+    v: {
+      research: [
+        'Contributing to a two-year research program on privacy-preserving AI for secure source-code and smart-contract vulnerability analysis.',
+        'Working on a framework combining LLMs, Code Property Graphs, semantic code anonymization, static analysis and secure execution, with evaluation through regression testing, metamorphic testing, security validation and red-team analysis.'
+      ],
+      systems: [
+        'Research on privacy-preserving analysis of source code, combining Code Property Graphs, static analysis and secure execution.',
+        'Evaluation through regression testing, metamorphic testing and security validation of AI-assisted vulnerability detection.'
+      ],
+      agents: [
+        'Research on LLM security, privacy–accuracy trade-offs and trustworthy AI for vulnerability reasoning.',
+        'Red-team analysis and metamorphic testing of AI-assisted vulnerability detection.'
+      ],
+      product: [
+        'A two-year research program on privacy-preserving AI for source-code and smart-contract vulnerability analysis.',
+        'Framework work combining LLMs, Code Property Graphs, semantic code anonymization and static analysis.'
+      ]
+    }
+  },
+  tiny: {
+    dates: 'JUN 2026 — PRESENT', role: 'AI & Software Development Intern', org: 'Tinycrows Private Limited · Remote',
+    v: {
+      research: [
+        'Python backend services and REST APIs supporting production AI workflows, model deployment and automated evaluation, with CI/CD through GitHub Actions.',
+        'An intelligent document processing pipeline combining OCR, computer-vision-based PII detection and redaction, and automated document analysis.'
+      ],
+      systems: [
+        'Built the automation layer behind merchant assessment — including a single workflow of 168 nodes — alongside many further workflows across the platform.',
+        'Python backend services and REST APIs with CI/CD through GitHub Actions, containerized with Docker and debugged in production for reliability and reproducibility.',
+        'Analytics and monitoring interfaces to evaluate workflow outcomes and system performance, supporting troubleshooting and iterative improvement.'
+      ],
+      agents: [
+        'Secure backend middleware including API rate limiting, request validation, webhook proxying and LLM-response sanitization.',
+        'Document-processing features using OCR, PII detection and redaction, and automated analysis over uploaded compliance evidence.'
+      ],
+      product: [
+        'Built the Merchant Assessment & Security Analytics Dashboard from scratch in Next.js, TypeScript, React Query and Tailwind CSS, automating merchant cyber-risk assessments end to end.',
+        'Built the automation behind it — a 168-node merchant assessment workflow, plus many more workflows running across the platform.',
+        'Interactive security visualizations — attack-surface maps, radar charts, score distributions — with D3.js and Recharts; enterprise authentication with JWT, RBAC and Microsoft, Google, GitHub and Slack SSO.'
+      ]
+    }
+  },
+  uts: {
+    dates: 'JUN — JUL 2025', role: 'Summer Training Intern', org: 'Unique Training Solutions · Azure Fundamentals Program',
+    v: {
+      research: [
+        'A six-week Azure cloud program, ending in a deployed Python weather forecasting platform built on the OpenWeather API.',
+        'Accessible forecast output including visual representations and audio-based delivery.'
+      ],
+      systems: [
+        'Built and deployed a Python weather forecasting platform integrating the OpenWeather API for real-time multi-city data processing.',
+        'REST API integrations and data-processing pipelines with Pandas and Scikit-learn, covered by automated pytest tests.'
+      ],
+      agents: [
+        'Built and deployed a Python weather forecasting platform on third-party APIs and real-time data.',
+        'Data-processing pipelines with Pandas and Scikit-learn, plus audio-based forecast delivery for accessibility.'
+      ],
+      product: [
+        'Built and deployed a Python weather forecasting platform integrating the OpenWeather API for real-time multi-city data processing.',
+        'REST API integrations and data-processing pipelines using Pandas and Scikit-learn, with automated testing in pytest.'
+      ]
+    }
+  }
+};
+
+const R = 'research', S = 'systems', A = 'agents', P = 'product';
+const GROUPS = [
+  { name: 'Languages', items: [['Python', [R,S,A,P]], ['Java', [R,S,A,P]], ['TypeScript', [R,A,P]], ['JavaScript', [R,S,A,P]], ['SQL', [R,S,A,P]]] },
+  { name: 'Agents & LLMs', items: [['LangGraph', [R,S,A,P]], ['LangChain', [R,S,A,P]], ['RAG', [R,A,P]], ['Agentic AI', [R,A]], ['Multi-agent systems', [R]], ['Tool calling', [A]], ['Agent orchestration', [A]], ['Prompt engineering', [A,P]], ['LLM evaluation', [R,A]], ['Human-in-the-loop', [R,S,A]], ['Conversational AI', [A]], ['Speech / TTS', [A]], ['OpenAI API', [A,P]], ['Anthropic Claude API', [A,P]], ['Google Gemini API', [A,P]], ['Ollama', [R,S,A,P]], ['Hugging Face', [R,S,A,P]]] },
+  { name: 'Retrieval & data systems', items: [['Knowledge graphs', [R,S,A]], ['Semantic retrieval', [R,S,A]], ['Embeddings', [A,P]], ['Vector search', [A,P]], ['ChromaDB', [S,A,P]], ['Vector databases', [A,P]], ['OCR', [R,S,A,P]], ['Document processing', [R,P]], ['Data preprocessing', [A,P]], ['ETL', [S,A,P]]] },
+  { name: 'Machine learning', items: [['PyTorch', [R,S,A,P]], ['TensorFlow', [R,A,P]], ['Scikit-learn', [R,A]], ['Deep learning', [R]], ['Neural networks', [R]], ['Computer vision', [R,A]], ['NLP', [R,A]], ['OpenCV', [A]], ['Model evaluation', [R,A]]] },
+  { name: 'Research & assurance', items: [['Code Property Graphs', [R]], ['Semantic code anonymization', [R]], ['Static analysis', [R]], ['Privacy-preserving AI', [R]], ['Regression testing', [R,S]], ['Metamorphic testing', [R]], ['Red-team analysis', [R]], ['Security validation', [R]], ['Automated testing', [R,S,P]], ['pytest', [S,A,P]]] },
+  { name: 'Backend', items: [['FastAPI', [R,S,A,P]], ['Flask', [R,S,A,P]], ['Node.js', [A,P]], ['REST APIs', [R,S,A,P]], ['Webhooks', [A,P]], ['JWT', [A,P]], ['RBAC', [A,P]], ['OAuth / SSO', [A,P]], ['System design', [A,P]], ['Data modeling', [A,P]], ['Code review', [P]], ['Agile / sprints', [P]]] },
+  { name: 'Frontend', items: [['React', [P]], ['Next.js', [P]], ['Tailwind CSS', [P]], ['React Query', [P]], ['D3.js', [P]], ['Recharts', [P]]] },
+  { name: 'Databases', items: [['PostgreSQL', [R,S,A,P]], ['MongoDB', [A,P]], ['MySQL', [A,P]], ['Redis', [S,A,P]], ['Pandas', [A,P]], ['NumPy', [A,P]]] },
+  { name: 'Systems & networking', items: [['Operating systems', [R,S]], ['Computer networks', [R,S]], ['Distributed systems', [S]], ['TCP/IP', [S]], ['DNS', [S]], ['HTTP / HTTPS', [S]], ['Data structures & algorithms', [R]], ['Object-oriented programming', [R]], ['Database systems', [R]]] },
+  { name: 'Cloud & delivery', items: [['Docker', [R,S,A,P]], ['Docker Compose', [S,A,P]], ['GitHub Actions', [R,S,A,P]], ['CI/CD', [S,A,P]], ['Linux', [R,S,A,P]], ['Bash', [A,P]], ['Microsoft Azure', [R,S,A,P]], ['Azure OpenAI', [R]], ['Azure AI Services', [R]], ['AWS', [R,S,A,P]]] },
+  { name: 'Automation', items: [['n8n', [R,S,A,P]], ['Workflow automation', [R,S,A,P]], ['Multi-step workflows', [R,S,A,P]], ['Process automation', [S,P]], ['Webhook orchestration', [S,P]], ['Scheduled pipelines', [S,P]], ['Power Automate', [R,S,P]], ['Copilot Studio', [R,S]]] },
+  { name: 'Tools', items: [['Git', [R,S,A,P]], ['GitHub', [R,S,A,P]], ['Gradio', [R,A,P]], ['Jupyter', [A,P]], ['Claude Code', [R]], ['Microsoft 365 Copilot', [R]]] }
+];
+
+class Component extends DCLogic {
+  state = { lens: 0, dark: false, open: { dg: false, dc: false, tprm: false, rag: false } };
+
+  mainRef = (el) => { this.main = el; };
+  wipeRef = (el) => { this.wipe = el; };
+
+  get reduced() { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+
+  applyInk(i, dark) {
+    const l = LENSES[i];
+    const d = dark === undefined ? this.state.dark : dark;
+    const s = document.documentElement.style;
+    s.setProperty('--ink', d ? l.inkD : l.ink);
+    s.setProperty('--tint', d ? l.tintD : l.tint);
+  }
+
+  applyTheme(dark) {
+    const s = document.documentElement.style;
+    const T = dark ? THEME_DARK : THEME_LIGHT;
+    s.setProperty('transition', 'none');
+    Object.keys(T).forEach((k) => s.setProperty(k, T[k]));
+    void document.documentElement.offsetWidth;
+    requestAnimationFrame(() => s.removeProperty('transition'));
+    s.setProperty('color-scheme', dark ? 'dark' : 'light');
+    this.applyInk(this.state.lens, dark);
+  }
+
+  toggleTheme = () => {
+    const dark = !this.state.dark;
+    this.applyTheme(dark);
+    try { localStorage.setItem('hr-four-readings-theme', dark ? 'dark' : 'light'); } catch (e) {}
+    this.setState({ dark: dark });
+  }
+
+  runWipe(i) {
+    if (!this.wipe || this.reduced) return;
+    this.wipe.style.background = this.state.dark ? LENSES[i].inkD : LENSES[i].ink;
+    this.wipe.animate(
+      [{ transform: 'scaleX(0)', opacity: 1 }, { transform: 'scaleX(1)', opacity: 1 }, { transform: 'scaleX(1)', opacity: 0 }],
+      { duration: 760, easing: 'cubic-bezier(.16,.8,.2,1)' }
+    );
+  }
+
+  retypeset() {
+    if (!this.main || this.reduced) return;
+    const els = this.main.querySelectorAll('[data-swap]');
+    els.forEach((el, k) => {
+      el.animate(
+        [{ opacity: 0, transform: 'translateY(7px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 460, delay: Math.min(k * 22, 220), easing: 'cubic-bezier(.2,.75,.2,1)', fill: 'backwards' }
+      );
+    });
+  }
+
+  pick = (i) => {
+    if (i === this.state.lens) return;
+    this.applyInk(i);
+    this.runWipe(i);
+    this.setState({ lens: i }, () => requestAnimationFrame(() => this.retypeset()));
+  };
+
+  toggle = (id) => {
+    this.setState((s) => ({ open: Object.assign({}, s.open, { [id]: !s.open[id] }) }));
+  };
+
+  onKey = (e) => {
+    if (e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4) this.pick(n - 1);
+  };
+
+  componentDidMount() {
+    let dark = null;
+    try { const v = localStorage.getItem('hr-four-readings-theme'); if (v) dark = v === 'dark'; } catch (e) {}
+    if (dark === null) dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    this.applyTheme(dark);
+    if (dark !== this.state.dark) this.setState({ dark: dark });
+    window.addEventListener('keydown', this.onKey);
+    if (this.reduced) {
+      document.querySelectorAll('[data-rule]').forEach((n) => n.setAttribute('data-rule', 'in'));
+      document.querySelectorAll('[data-up]').forEach((n) => n.setAttribute('data-up', 'in'));
+      return;
+    }
+    this.io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        en.target.setAttribute(en.target.hasAttribute('data-rule') ? 'data-rule' : 'data-up', 'in');
+        this.io.unobserve(en.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+    this.observeReveals();
+  }
+
+  componentDidUpdate() { this.observeReveals(); }
+
+  observeReveals() {
+    if (!this.io) return;
+    document.querySelectorAll('[data-rule="in"], [data-up="in"]').forEach(() => {});
+    document.querySelectorAll('[data-rule=""], [data-up=""]').forEach((n) => this.io.observe(n));
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.onKey);
+    if (this.io) this.io.disconnect();
+  }
+
+  renderVals() {
+    const li = this.state.lens;
+    const L = LENSES[li];
+    const key = L.id;
+    const pad = (n) => (n < 10 ? '0' + n : '' + n);
+
+    const lensTabs = LENSES.map((l, i) => ({
+      num: l.num,
+      label: l.label,
+      on: i === li,
+      off: i !== li,
+      pick: () => this.pick(i)
+    }));
+
+    const works = L.order.map((id, i) => {
+      const p = PROJECTS[id];
+      const v = p.v[key];
+      const open = !!this.state.open[id];
+      return {
+        num: pad(i + 1),
+        title: p.title,
+        stack: v.stack,
+        line: v.line,
+        top: i === 0,
+        open: open,
+        openStr: open ? 'true' : 'false',
+        sign: open ? '–' : '+',
+        link: p.link,
+        alt: !!p.alt,
+        altText: p.alt,
+        bullets: v.bullets.map((t, k) => ({ i: pad(k + 1), t: t })),
+        toggle: () => this.toggle(id)
+      };
+    });
+
+    const roles = L.roleOrder.map((id) => {
+      const r = ROLES[id];
+      return {
+        dates: r.dates, role: r.role, org: r.org,
+        bullets: r.v[key].map((t, k) => ({ i: pad(k + 1), t: t }))
+      };
+    });
+
+    const groups = GROUPS.map((g) => ({
+      name: g.name,
+      items: g.items.map((it) => ({ n: it[0], on: it[1].indexOf(key) !== -1, off: it[1].indexOf(key) === -1 }))
+    }));
+
+    return {
+      dark: this.state.dark,
+      light: !this.state.dark,
+      toggleTheme: this.toggleTheme,
+      lensTabs: lensTabs,
+      readingLine: 'Reading ' + L.num + ' of 04 — ' + L.label,
+      role: L.role,
+      summary: L.summary,
+      closing: L.closing,
+      workNote: L.workNote,
+      expNote: L.expNote,
+      indexNote: L.indexNote,
+      works: works,
+      roles: roles,
+      groups: groups
+    };
+  }
+}
+</script>
+</body>
+</html>
